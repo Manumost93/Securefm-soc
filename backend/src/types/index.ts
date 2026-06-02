@@ -23,4 +23,5 @@ export type EventType =
   | 'role_changed'
   | 'suspicious_ip'
   | 'rate_limit_triggered'
-  | 'web_audit_executed';
+  | 'web_audit_executed'
+  | 'web_audit_blocked';
