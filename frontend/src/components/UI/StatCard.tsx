@@ -9,47 +9,40 @@ interface Props {
 }
 
 const colorMap = {
-  gold:   { fg: '#c8931a', bg: 'rgba(200,147,26,0.08)',  border: 'rgba(200,147,26,0.22)',  glow: '0 0 18px rgba(200,147,26,0.18)' },
-  red:    { fg: '#ef4444', bg: 'rgba(239,68,68,0.08)',   border: 'rgba(239,68,68,0.22)',   glow: '0 0 18px rgba(239,68,68,0.18)'  },
-  purple: { fg: '#8b5cf6', bg: 'rgba(139,92,246,0.08)',  border: 'rgba(139,92,246,0.22)',  glow: '0 0 18px rgba(139,92,246,0.15)' },
-  amber:  { fg: '#f59e0b', bg: 'rgba(245,158,11,0.08)',  border: 'rgba(245,158,11,0.22)',  glow: '0 0 18px rgba(245,158,11,0.15)' },
-  green:  { fg: '#22c55e', bg: 'rgba(34,197,94,0.08)',   border: 'rgba(34,197,94,0.22)',   glow: '0 0 18px rgba(34,197,94,0.15)'  },
+  gold:   { fg: '#B08A57', bg: 'rgba(176,138,87,0.1)',  border: 'rgba(176,138,87,0.2)'  },
+  red:    { fg: '#9F3A32', bg: 'rgba(159,58,50,0.1)',   border: 'rgba(159,58,50,0.2)'   },
+  purple: { fg: '#5F6F52', bg: 'rgba(95,111,82,0.1)',   border: 'rgba(95,111,82,0.2)'   },
+  amber:  { fg: '#C58A2B', bg: 'rgba(197,138,43,0.1)',  border: 'rgba(197,138,43,0.2)'  },
+  green:  { fg: '#5F6F52', bg: 'rgba(95,111,82,0.1)',   border: 'rgba(95,111,82,0.2)'   },
 };
 
 const StatCard: React.FC<Props> = ({ title, value, icon: Icon, color = 'gold', subtitle }) => {
   const c = colorMap[color];
   return (
     <div className="stat-card relative" style={{
-      background: 'linear-gradient(145deg, #070a15 0%, #04060e 100%)',
-      border: `1px solid ${c.border}`,
-      boxShadow: `${c.glow}, 0 4px 24px rgba(0,0,0,0.6)`,
+      background: '#FFFCF6',
+      border: `1px solid #D8C8B5`,
+      boxShadow: '0 1px 3px rgba(31,28,24,0.05), 0 4px 12px rgba(31,28,24,0.06)',
     }}>
-      {/* Corner decorations */}
-      <div className="absolute top-0 right-0 w-3 h-3" style={{ borderTop: `1px solid ${c.fg}60`, borderRight: `1px solid ${c.fg}60` }} />
-      <div className="absolute bottom-0 left-0 w-3 h-3" style={{ borderBottom: `1px solid ${c.fg}40`, borderLeft: `1px solid ${c.fg}40` }} />
-
-      {/* Top accent line */}
-      <div className="absolute top-0 left-0 right-0 h-px" style={{ background: `linear-gradient(90deg, transparent, ${c.fg}50, transparent)` }} />
+      {/* Accent top border */}
+      <div className="absolute top-0 left-6 right-6 h-px rounded-full" style={{ background: `linear-gradient(90deg, transparent, ${c.fg}40, transparent)` }} />
 
       <div className="flex items-center justify-between">
-        <p className="font-mono text-xs uppercase tracking-widest" style={{ color: '#1e2a3a', letterSpacing: '0.12em' }}>
+        <p className="font-sans text-xs font-medium uppercase tracking-wide" style={{ color: '#A89C8E', letterSpacing: '0.06em' }}>
           {title}
         </p>
-        <div className="w-8 h-8 flex items-center justify-center rounded" style={{ background: c.bg, border: `1px solid ${c.border}` }}>
-          <Icon size={14} style={{ color: c.fg, filter: `drop-shadow(0 0 3px ${c.fg})` }} />
+        <div className="w-8 h-8 flex items-center justify-center rounded-md" style={{ background: c.bg, border: `1px solid ${c.border}` }}>
+          <Icon size={15} style={{ color: c.fg }} />
         </div>
       </div>
 
-      <p className="font-mono text-4xl font-bold leading-none" style={{ color: c.fg, textShadow: `0 0 16px ${c.fg}70` }}>
+      <p className="font-sans text-4xl font-bold leading-none" style={{ color: c.fg }}>
         {value}
       </p>
 
       {subtitle && (
-        <p className="font-mono text-xs" style={{ color: '#1e2a3a' }}>{subtitle}</p>
+        <p className="font-sans text-xs" style={{ color: '#A89C8E' }}>{subtitle}</p>
       )}
-
-      {/* Bottom line */}
-      <div className="absolute bottom-0 left-0 right-0 h-px" style={{ background: `linear-gradient(90deg, ${c.fg}20, transparent)` }} />
     </div>
   );
 };

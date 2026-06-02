@@ -9,12 +9,15 @@ interface Props {
 
 const EmptyState: React.FC<Props> = ({ icon: Icon, title, description, action }) => (
   <div className="flex flex-col items-center justify-center py-16 gap-4 text-center">
-    <div className="w-16 h-16 bg-slate-800/50 border border-slate-700/50 rounded-2xl flex items-center justify-center">
-      <Icon size={28} className="text-slate-600" />
+    <div className="w-14 h-14 rounded-xl flex items-center justify-center" style={{
+      background: '#EFE6D8',
+      border: '1px solid #D8C8B5',
+    }}>
+      <Icon size={24} style={{ color: '#A89C8E' }} />
     </div>
     <div>
-      <p className="text-white font-medium">{title}</p>
-      {description && <p className="text-slate-500 text-sm mt-1">{description}</p>}
+      <p className="font-sans font-medium text-sm" style={{ color: '#1F1C18' }}>{title}</p>
+      {description && <p className="font-sans text-sm mt-1" style={{ color: '#A89C8E' }}>{description}</p>}
     </div>
     {action && <div>{action}</div>}
   </div>
