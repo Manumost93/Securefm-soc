@@ -1,0 +1,12 @@
+# Normalizar line endings automáticamente
+* text=auto
+
+# Shell scripts deben usar LF (para Docker/Linux)
+*.sh text eol=lf
+docker-entrypoint.sh text eol=lf
+
+# Archivos binarios — no tocar
+*.png binary
+*.jpg binary
+*.ico binary
+*.db binary

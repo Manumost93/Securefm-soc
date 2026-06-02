@@ -1,0 +1,25 @@
+# ============================================================
+# SecureFM SOC — Terraform Variables de ejemplo
+# Copia como terraform.tfvars y rellena los valores reales
+# NUNCA commitees terraform.tfvars (está en .gitignore)
+# ============================================================
+
+aws_region   = "eu-west-1"
+environment  = "production"
+project_name = "securefm-soc"
+
+# Base de datos
+db_name     = "securefm_soc"
+db_username = "sfm_admin"
+db_password = "CambiaEsto_ContraseñaSegura_16chars+"
+
+db_instance_class = "db.t3.micro"  # free tier
+
+# Backend EC2
+backend_instance_type = "t2.micro"  # free tier
+
+# JWT
+jwt_secret = "genera-uno-con-node-e-require-crypto-randomBytes-48-hex"
+
+# CORS — URL donde estará el frontend desplegado
+frontend_url = "https://tu-frontend.vercel.app"

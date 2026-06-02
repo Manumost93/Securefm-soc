@@ -1,0 +1,85 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  name      String
+  role      String   @default("viewer")
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  assignedTickets Ticket[]       @relation("AssignedTechnician")
+  createdTickets  Ticket[]       @relation("TicketCreator")
+  comments        TicketComment[]
+  securityLogs    SecurityLog[]
+}
+
+model Ticket {
+  id          String   @id @default(uuid())
+  title       String
+  description String
+  category    String
+  location    String
+  priority    String   @default("medium")
+  status      String   @default("open")
+  imageUrl    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  creatorId  String
+  creator    User    @relation("TicketCreator", fields: [creatorId], references: [id])
+  assigneeId String?
+  assignee   User?   @relation("AssignedTechnician", fields: [assigneeId], references: [id])
+  comments   TicketComment[]
+
+  @@index([status])
+  @@index([priority])
+  @@index([category])
+  @@index([assigneeId])
+  @@index([creatorId])
+  @@index([updatedAt])
+}
+
+model TicketComment {
+  id        String   @id @default(uuid())
+  content   String
+  action    String?
+  createdAt DateTime @default(now())
+
+  ticketId String
+  ticket   Ticket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  userId   String
+  user     User   @relation(fields: [userId], references: [id])
+
+  @@index([ticketId])
+}
+
+model SecurityLog {
+  id          String   @id @default(uuid())
+  eventType   String
+  userId      String?
+  userEmail   String?
+  ip          String?
+  country     String?
+  severity    String   @default("info")
+  description String
+  userAgent   String?
+  createdAt   DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id])
+
+  @@index([severity])
+  @@index([eventType])
+  @@index([createdAt])
+  @@index([ip])
+  @@index([userId])
+}
