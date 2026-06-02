@@ -21,7 +21,7 @@
     "db:studio": "prisma studio",
     "db:setup": "prisma generate && prisma migrate dev",
     "seed": "ts-node --transpile-only prisma/seed.ts",
-    "render-build": "npm install && node_modules/.bin/prisma generate && node_modules/.bin/prisma migrate deploy && node_modules/.bin/tsc",
+    "render-build": "npm install --include=dev && node_modules/.bin/prisma generate && node_modules/.bin/prisma migrate deploy && node_modules/.bin/tsc",
     "render-start": "node dist/server.js"
   },
   "dependencies": {
