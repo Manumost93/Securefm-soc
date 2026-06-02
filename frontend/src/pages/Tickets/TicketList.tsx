@@ -52,20 +52,17 @@ const TicketListPage: React.FC = () => {
   return (
     <div className="space-y-5">
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="w-0.5 h-6" style={{ background: 'linear-gradient(180deg, transparent, #c8931a, transparent)', boxShadow: '0 0 6px rgba(200,147,26,0.5)' }} />
-          <div>
-            <h2 className="font-mono font-bold text-base tracking-widest" style={{ color: '#8a9bb5' }}>INCIDENCIAS</h2>
-            <p className="font-mono text-xs" style={{ color: '#1e2a3a' }}>{tickets.length} registros</p>
-          </div>
+        <div>
+          <h2 className="font-sans font-semibold text-base" style={{ color: '#1F1C18' }}>Incidencias</h2>
+          <p className="font-sans text-xs mt-0.5" style={{ color: '#A89C8E' }}>{tickets.length} registros</p>
         </div>
         <div className="flex items-center gap-2">
           <button onClick={handleExport} className="btn-ghost" disabled={tickets.length === 0}>
-            <Download size={12} /> EXPORTAR CSV
+            <Download size={13} /> Exportar CSV
           </button>
           {isTechnician && (
             <Link to="/tickets/new" className="btn-primary">
-              <Plus size={12} /> NUEVO
+              <Plus size={13} /> Nuevo
             </Link>
           )}
         </div>
@@ -74,7 +71,7 @@ const TicketListPage: React.FC = () => {
       {/* Filters */}
       <div className="card p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
         <div className="relative">
-          <Search size={11} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: '#1e2a3a' }} />
+          <Search size={12} className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: '#C4B8AA' }} />
           <input type="text" placeholder="Buscar..." value={search} onChange={(e) => setSearch(e.target.value)} className="input pl-8" />
         </div>
         <select value={status} onChange={(e) => setStatus(e.target.value)} className="input">
@@ -95,7 +92,7 @@ const TicketListPage: React.FC = () => {
         <EmptyState icon={Ticket} title="Sin incidencias" description="No se encontraron resultados."
           action={isTechnician ? <Link to="/tickets/new" className="btn-primary">Crear incidencia</Link> : undefined} />
       ) : (
-        <div className="card card-corners overflow-hidden">
+        <div className="card overflow-hidden">
           <table className="cyber-table">
             <thead>
               <tr>
@@ -107,20 +104,25 @@ const TicketListPage: React.FC = () => {
               {tickets.map((ticket) => (
                 <tr key={ticket.id}>
                   <td>
-                    <Link to={`/tickets/${ticket.id}`} className="font-medium transition-colors"
-                      style={{ color: '#4a5a6a' }}
-                      onMouseEnter={e => e.currentTarget.style.color = '#c8931a'}
-                      onMouseLeave={e => e.currentTarget.style.color = '#4a5a6a'}>
+                    <Link to={`/tickets/${ticket.id}`}
+                      className="font-medium text-sm transition-colors"
+                      style={{ color: '#1F1C18' }}
+                      onMouseEnter={e => e.currentTarget.style.color = '#B08A57'}
+                      onMouseLeave={e => e.currentTarget.style.color = '#1F1C18'}>
                       {ticket.title}
                     </Link>
-                    <p className="font-mono text-xs mt-0.5" style={{ color: '#1a2030' }}>#{ticket.id.slice(0, 8)}</p>
+                    <p className="font-mono text-xs mt-0.5" style={{ color: '#C4B8AA' }}>#{ticket.id.slice(0, 8)}</p>
                   </td>
-                  <td><span className="badge" style={{ color: '#2a3a4a', background: 'rgba(42,58,74,0.2)', borderColor: 'rgba(42,58,74,0.3)' }}>{ticket.category}</span></td>
-                  <td className="text-xs" style={{ color: '#2a3a4a' }}>{ticket.location}</td>
+                  <td>
+                    <span className="badge" style={{ color: '#6F6558', background: 'rgba(111,101,88,0.1)', borderColor: 'rgba(111,101,88,0.2)' }}>
+                      {ticket.category}
+                    </span>
+                  </td>
+                  <td className="text-xs" style={{ color: '#6F6558' }}>{ticket.location}</td>
                   <td><PriorityBadge priority={ticket.priority} /></td>
                   <td><StatusBadge status={ticket.status} /></td>
-                  <td className="text-xs" style={{ color: '#2a3a4a' }}>{ticket.assignee?.name || '—'}</td>
-                  <td className="font-mono text-xs" style={{ color: '#1a2030' }}>
+                  <td className="text-xs" style={{ color: '#6F6558' }}>{ticket.assignee?.name || '—'}</td>
+                  <td className="font-mono text-xs" style={{ color: '#A89C8E' }}>
                     {formatDistanceToNow(new Date(ticket.updatedAt), { addSuffix: true, locale: es })}
                   </td>
                 </tr>

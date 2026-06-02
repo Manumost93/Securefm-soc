@@ -10,20 +10,20 @@ import { downloadCSV, logsToCSV } from '../utils/export';
 import { format } from 'date-fns';
 
 const SEV_COLORS: Record<string, string> = {
-  info: '#1e2a3a', low: '#4a5a6a', medium: '#c8931a', high: '#f59e0b', critical: '#ef4444',
+  info: '#D8C8B5', low: '#A89C8E', medium: '#C58A2B', high: '#B08A57', critical: '#9F3A32',
 };
 const EVENT_LABELS: Record<string, string> = {
-  login_success: 'Login OK', login_failed: 'Login FAIL', access_denied: 'Denegado',
+  login_success: 'Login OK', login_failed: 'Login Fail', access_denied: 'Denegado',
   ticket_created: 'Ticket+', ticket_deleted: 'Ticket-', role_changed: 'Rol',
-  suspicious_ip: 'IP Susp.', rate_limit_triggered: 'RateLimit', web_audit_executed: 'Audit',
+  suspicious_ip: 'IP Susp.', rate_limit_triggered: 'Rate Limit', web_audit_executed: 'Audit',
 };
 
-const BatTooltip = ({ active, payload, label }: any) => {
+const NcTooltip = ({ active, payload, label }: any) => {
   if (!active || !payload?.length) return null;
   return (
-    <div className="px-3 py-2 rounded font-mono text-xs" style={{ background: '#070a15', border: '1px solid rgba(200,147,26,0.25)', color: '#c8931a' }}>
-      <p style={{ color: '#3a4a5a' }}>{label}</p>
-      <p>{payload[0].name}: <span style={{ color: '#c8931a' }}>{payload[0].value}</span></p>
+    <div className="px-3 py-2 rounded-md font-sans text-xs" style={{ background: '#FFFCF6', border: '1px solid #D8C8B5', boxShadow: '0 4px 12px rgba(31,28,24,0.1)' }}>
+      <p style={{ color: '#A89C8E' }}>{label}</p>
+      <p style={{ color: '#1F1C18' }}>{payload[0].name}: <span style={{ color: '#B08A57', fontWeight: 600 }}>{payload[0].value}</span></p>
     </div>
   );
 };
@@ -39,10 +39,8 @@ const SOCDashboardPage: React.FC = () => {
     Promise.all([
       api.get<SecurityStats>('/logs/stats'),
       api.get<SecurityLog[]>('/logs'),
-    ]).then(([s, l]) => {
-      setStats(s.data);
-      setLogs(l.data);
-    }).catch(console.error).finally(() => setLoading(false));
+    ]).then(([s, l]) => { setStats(s.data); setLogs(l.data); })
+      .catch(console.error).finally(() => setLoading(false));
   }, []);
 
   const filtered = logs.filter((l) => {
@@ -59,14 +57,11 @@ const SOCDashboardPage: React.FC = () => {
     <div className="space-y-6">
 
       {/* Header */}
-      <div className="flex items-center gap-3">
-        <div className="w-0.5 h-8" style={{ background: 'linear-gradient(180deg, transparent, #ef4444, transparent)', boxShadow: '0 0 8px rgba(239,68,68,0.5)' }} />
-        <div>
-          <h2 className="font-mono font-bold text-base tracking-widest" style={{ color: '#8a9bb5' }}>
-            SOC — <span style={{ color: '#ef4444', textShadow: '0 0 8px rgba(239,68,68,0.5)' }}>SECURITY CENTER</span>
-          </h2>
-          <p className="font-mono text-xs" style={{ color: '#1e2a3a' }}>// Monitorización de eventos de seguridad</p>
-        </div>
+      <div>
+        <h2 className="font-sans font-semibold text-base" style={{ color: '#1F1C18' }}>
+          SOC — <span style={{ color: '#9F3A32' }}>Security Center</span>
+        </h2>
+        <p className="font-sans text-xs mt-0.5" style={{ color: '#A89C8E' }}>Monitorización de eventos de seguridad</p>
       </div>
 
       {stats && (
@@ -82,37 +77,36 @@ const SOCDashboardPage: React.FC = () => {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
 
             {/* Bar chart */}
-            <div className="card card-corners p-5">
+            <div className="card p-5">
               <p className="section-title mb-4">Eventos por tipo</p>
               <ResponsiveContainer width="100%" height={200}>
                 <BarChart data={stats.byType.map((t) => ({ name: EVENT_LABELS[t.type] || t.type, count: t.count }))} margin={{ left: -20 }}>
-                  <XAxis dataKey="name" tick={{ fill: '#1e2a3a', fontSize: 8, fontFamily: 'JetBrains Mono' }} axisLine={false} tickLine={false} />
-                  <YAxis tick={{ fill: '#1e2a3a', fontSize: 8, fontFamily: 'JetBrains Mono' }} axisLine={false} tickLine={false} />
-                  <Tooltip content={<BatTooltip />} />
-                  <Bar dataKey="count" name="Eventos" fill="rgba(200,147,26,0.6)" radius={[2, 2, 0, 0]}
-                    activeBar={{ fill: '#c8931a', filter: 'drop-shadow(0 0 6px rgba(200,147,26,0.6))' }} />
+                  <XAxis dataKey="name" tick={{ fill: '#A89C8E', fontSize: 8, fontFamily: 'Inter' }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fill: '#A89C8E', fontSize: 8, fontFamily: 'Inter' }} axisLine={false} tickLine={false} />
+                  <Tooltip content={<NcTooltip />} />
+                  <Bar dataKey="count" name="Eventos" fill="#D8C8B5" radius={[3, 3, 0, 0]}
+                    activeBar={{ fill: '#B08A57' }} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
 
             {/* Pie chart */}
-            <div className="card card-corners p-5">
-              <p className="section-title mb-4">Severidad</p>
+            <div className="card p-5">
+              <p className="section-title mb-4">Distribución por severidad</p>
               <ResponsiveContainer width="100%" height={160}>
                 <PieChart>
-                  <Pie data={stats.bySeverity} dataKey="count" nameKey="severity" cx="50%" cy="50%" outerRadius={65} innerRadius={30}>
+                  <Pie data={stats.bySeverity} dataKey="count" nameKey="severity" cx="50%" cy="50%" outerRadius={65} innerRadius={32}>
                     {stats.bySeverity.map((entry) => (
-                      <Cell key={entry.severity} fill={SEV_COLORS[entry.severity] || '#1e2a3a'}
-                        stroke={SEV_COLORS[entry.severity] || '#1e2a3a'} strokeWidth={0} />
+                      <Cell key={entry.severity} fill={SEV_COLORS[entry.severity] || '#D8C8B5'} stroke="none" />
                     ))}
                   </Pie>
-                  <Tooltip content={<BatTooltip />} />
+                  <Tooltip content={<NcTooltip />} />
                 </PieChart>
               </ResponsiveContainer>
               <div className="flex flex-wrap gap-2 mt-2 justify-center">
                 {stats.bySeverity.map((s) => (
-                  <span key={s.severity} className="flex items-center gap-1 font-mono text-xs" style={{ color: '#1e2a3a' }}>
-                    <span className="w-2 h-2 rounded-sm inline-block" style={{ background: SEV_COLORS[s.severity] || '#1e2a3a' }} />
+                  <span key={s.severity} className="flex items-center gap-1 font-sans text-xs" style={{ color: '#6F6558' }}>
+                    <span className="w-2 h-2 rounded-sm inline-block" style={{ background: SEV_COLORS[s.severity] || '#D8C8B5' }} />
                     {s.severity} ({s.count})
                   </span>
                 ))}
@@ -120,30 +114,30 @@ const SOCDashboardPage: React.FC = () => {
             </div>
 
             {/* Countries + IPs */}
-            <div className="card card-corners p-5">
+            <div className="card p-5">
               <p className="section-title mb-4 flex items-center gap-2"><Globe size={11} /> Actividad por país</p>
               <div className="space-y-2">
                 {stats.byCountry.map((c) => (
                   <div key={c.country} className="flex items-center gap-2">
-                    <span className="font-mono text-xs w-8" style={{ color: '#2a3a4a' }}>{c.country}</span>
-                    <div className="flex-1 rounded-sm h-1" style={{ background: '#0b1020' }}>
-                      <div className="h-1 rounded-sm" style={{
+                    <span className="font-mono text-xs w-8" style={{ color: '#6F6558' }}>{c.country || '—'}</span>
+                    <div className="flex-1 rounded-full h-1.5" style={{ background: '#EFE6D8' }}>
+                      <div className="h-1.5 rounded-full" style={{
                         width: `${Math.min(100, (c.count / (stats.byCountry[0]?.count || 1)) * 100)}%`,
-                        background: 'rgba(200,147,26,0.5)',
+                        background: '#B08A57',
                       }} />
                     </div>
-                    <span className="font-mono text-xs w-5 text-right" style={{ color: '#1e2a3a' }}>{c.count}</span>
+                    <span className="font-mono text-xs w-5 text-right" style={{ color: '#A89C8E' }}>{c.count}</span>
                   </div>
                 ))}
               </div>
 
               {stats.suspiciousIps.length > 0 && (
-                <div className="mt-4 pt-3" style={{ borderTop: '1px solid rgba(239,68,68,0.1)' }}>
-                  <p className="section-title mb-2" style={{ color: 'rgba(239,68,68,0.5)' }}>IPs con alertas</p>
+                <div className="mt-4 pt-3" style={{ borderTop: '1px solid #EFE6D8' }}>
+                  <p className="section-title mb-2" style={{ color: '#9F3A32' }}>IPs con alertas</p>
                   {stats.suspiciousIps.map((s) => (
-                    <div key={s.ip} className="flex items-center justify-between py-1">
-                      <span className="font-mono text-xs" style={{ color: '#3a4a5a' }}>{s.ip}</span>
-                      <span className="badge" style={{ color: '#ef4444', background: 'rgba(239,68,68,0.1)', borderColor: 'rgba(239,68,68,0.3)' }}>{s.count}</span>
+                    <div key={s.ip} className="flex items-center justify-between py-1.5">
+                      <span className="font-mono text-xs" style={{ color: '#6F6558' }}>{s.ip}</span>
+                      <span className="badge" style={{ color: '#9F3A32', background: 'rgba(159,58,50,0.1)', borderColor: 'rgba(159,58,50,0.25)' }}>{s.count}</span>
                     </div>
                   ))}
                 </div>
@@ -154,7 +148,7 @@ const SOCDashboardPage: React.FC = () => {
       )}
 
       {/* Logs table */}
-      <div className="card card-corners p-5">
+      <div className="card p-5">
         <div className="flex items-center justify-between mb-4">
           <p className="section-title flex items-center gap-2">
             <Filter size={11} /> Eventos ({filtered.length})
@@ -182,21 +176,21 @@ const SOCDashboardPage: React.FC = () => {
             <tbody>
               {filtered.slice(0, 100).map((log) => (
                 <tr key={log.id}>
-                  <td className="font-mono text-xs whitespace-nowrap" style={{ color: '#1e2a3a' }}>
+                  <td className="font-mono text-xs whitespace-nowrap" style={{ color: '#A89C8E' }}>
                     {format(new Date(log.createdAt), 'dd/MM HH:mm:ss')}
                   </td>
-                  <td className="font-mono text-xs" style={{ color: '#3a4a5a' }}>{log.eventType}</td>
-                  <td className="text-xs" style={{ color: '#2a3a4a' }}>{log.userEmail || '—'}</td>
-                  <td className="font-mono text-xs" style={{ color: '#1e2a3a' }}>{log.ip || '—'}</td>
-                  <td className="font-mono text-xs" style={{ color: '#1a2030' }}>{log.country || '—'}</td>
+                  <td className="font-mono text-xs" style={{ color: '#6F6558' }}>{log.eventType}</td>
+                  <td className="text-xs" style={{ color: '#6F6558' }}>{log.userEmail || '—'}</td>
+                  <td className="font-mono text-xs" style={{ color: '#A89C8E' }}>{log.ip || '—'}</td>
+                  <td className="font-mono text-xs" style={{ color: '#A89C8E' }}>{log.country || '—'}</td>
                   <td><SeverityBadge severity={log.severity} /></td>
-                  <td className="text-xs max-w-xs truncate" style={{ color: '#2a3a4a' }}>{log.description}</td>
+                  <td className="text-xs max-w-xs truncate" style={{ color: '#6F6558' }}>{log.description}</td>
                 </tr>
               ))}
             </tbody>
           </table>
           {filtered.length === 0 && (
-            <p className="font-mono text-xs text-center py-8" style={{ color: '#1e2a3a' }}>Sin eventos con los filtros aplicados.</p>
+            <p className="font-sans text-xs text-center py-8" style={{ color: '#A89C8E' }}>Sin eventos con los filtros aplicados.</p>
           )}
         </div>
       </div>

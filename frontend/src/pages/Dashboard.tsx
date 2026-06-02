@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Ticket, AlertTriangle, Activity, Shield, Clock, ArrowRight, Zap, Plus } from 'lucide-react';
+import { Ticket, AlertTriangle, Activity, Shield, Clock, ArrowRight, Plus, Search } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import api from '../services/api';
 import { TicketStats, SecurityStats, Ticket as TicketType } from '../types';
@@ -14,9 +14,9 @@ import { es } from 'date-fns/locale';
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (!active || !payload?.length) return null;
   return (
-    <div className="px-3 py-2 rounded font-mono text-xs" style={{ background: '#070a15', border: '1px solid rgba(200,147,26,0.25)', color: '#c8931a' }}>
-      <p style={{ color: '#3a4a5a' }}>{label}</p>
-      <p>Tickets: <span style={{ color: '#c8931a' }}>{payload[0].value}</span></p>
+    <div className="px-3 py-2 rounded-md font-sans text-xs" style={{ background: '#FFFCF6', border: '1px solid #D8C8B5', boxShadow: '0 4px 12px rgba(31,28,24,0.1)' }}>
+      <p style={{ color: '#A89C8E' }}>{label}</p>
+      <p style={{ color: '#1F1C18' }}>Tickets: <span style={{ color: '#B08A57', fontWeight: 600 }}>{payload[0].value}</span></p>
     </div>
   );
 };
@@ -69,20 +69,16 @@ const DashboardPage: React.FC = () => {
 
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="w-0.5 h-8" style={{ background: 'linear-gradient(180deg, transparent, #c8931a, transparent)', boxShadow: '0 0 8px rgba(200,147,26,0.5)' }} />
-          <div>
-            <h2 className="font-mono font-bold text-base tracking-widest" style={{ color: '#8a9bb5' }}>
-              BIENVENIDO,{' '}
-              <span style={{ color: '#c8931a', textShadow: '0 0 8px rgba(200,147,26,0.5)' }}>
-                {user?.name?.split(' ')[0].toUpperCase()}
-              </span>
-            </h2>
-            <p className="font-mono text-xs" style={{ color: '#1e2a3a' }}>// PANEL PRINCIPAL — {new Date().toISOString().split('T')[0]}</p>
-          </div>
+        <div>
+          <h2 className="font-sans font-semibold text-base" style={{ color: '#1F1C18' }}>
+            Bienvenido, <span style={{ color: '#B08A57' }}>{user?.name?.split(' ')[0]}</span>
+          </h2>
+          <p className="font-sans text-xs mt-0.5" style={{ color: '#A89C8E' }}>
+            {new Date().toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+          </p>
         </div>
         <Link to="/tickets/new" className="btn-primary">
-          <Plus size={12} /> NUEVA INCIDENCIA
+          <Plus size={14} /> Nueva incidencia
         </Link>
       </div>
 
@@ -100,47 +96,47 @@ const DashboardPage: React.FC = () => {
           <StatCard title="Eventos SOC" value={secStats.total} icon={Shield} color="gold" />
           <StatCard title="Críticos SOC" value={secStats.critical} icon={AlertTriangle} color="red" />
           <StatCard title="Login Fallidos" value={secStats.loginFailed} icon={AlertTriangle} color="amber" />
-          <StatCard title="Últ. 24h" value={secStats.last24h} icon={Activity} color="green" />
+          <StatCard title="Últimas 24h" value={secStats.last24h} icon={Activity} color="green" />
         </div>
       )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
 
-        {/* Timeline chart */}
-        <div className="lg:col-span-2 card card-corners p-5">
+        {/* Timeline + recent tickets */}
+        <div className="lg:col-span-2 card p-5">
           <div className="flex items-center justify-between mb-4">
             <p className="section-title">Incidencias — últimos 14 días</p>
-            <span className="font-mono text-xs" style={{ color: '#1e2a3a' }}>{allTickets.length} total</span>
+            <span className="font-sans text-xs" style={{ color: '#A89C8E' }}>{allTickets.length} total</span>
           </div>
           <ResponsiveContainer width="100%" height={160}>
             <AreaChart data={timeline} margin={{ top: 4, right: 4, bottom: 0, left: -20 }}>
               <defs>
-                <linearGradient id="goldGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#c8931a" stopOpacity={0.3} />
-                  <stop offset="100%" stopColor="#c8931a" stopOpacity={0} />
+                <linearGradient id="bronzeGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#B08A57" stopOpacity={0.2} />
+                  <stop offset="100%" stopColor="#B08A57" stopOpacity={0} />
                 </linearGradient>
               </defs>
-              <XAxis dataKey="label" tick={{ fill: '#1e2a3a', fontSize: 9, fontFamily: 'JetBrains Mono' }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fill: '#1e2a3a', fontSize: 9, fontFamily: 'JetBrains Mono' }} axisLine={false} tickLine={false} allowDecimals={false} />
+              <XAxis dataKey="label" tick={{ fill: '#A89C8E', fontSize: 9, fontFamily: 'Inter' }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fill: '#A89C8E', fontSize: 9, fontFamily: 'Inter' }} axisLine={false} tickLine={false} allowDecimals={false} />
               <Tooltip content={<CustomTooltip />} />
-              <Area type="monotone" dataKey="count" stroke="#c8931a" strokeWidth={1.5} fill="url(#goldGrad)" dot={false} activeDot={{ r: 3, fill: '#c8931a', stroke: '#070a15', strokeWidth: 2 }} />
+              <Area type="monotone" dataKey="count" stroke="#B08A57" strokeWidth={1.5} fill="url(#bronzeGrad)"
+                dot={false} activeDot={{ r: 3, fill: '#B08A57', stroke: '#FFFCF6', strokeWidth: 2 }} />
             </AreaChart>
           </ResponsiveContainer>
 
-          <div className="gold-line mt-3" />
+          <div className="sand-line mt-4 mb-4" />
 
-          {/* Recent tickets mini-list */}
-          <p className="section-title mt-4 mb-3">Incidencias recientes</p>
+          <p className="section-title mb-3">Incidencias recientes</p>
           <div className="space-y-0.5">
             {recentTickets.map((ticket) => (
               <Link key={ticket.id} to={`/tickets/${ticket.id}`}
-                className="flex items-center gap-3 px-3 py-2.5 rounded transition-all"
+                className="flex items-center gap-3 px-3 py-2.5 rounded-md transition-all"
                 style={{ border: '1px solid transparent' }}
-                onMouseEnter={e => { e.currentTarget.style.background = 'rgba(200,147,26,0.03)'; e.currentTarget.style.borderColor = 'rgba(200,147,26,0.1)'; }}
+                onMouseEnter={e => { e.currentTarget.style.background = '#F6F1E8'; e.currentTarget.style.borderColor = '#D8C8B5'; }}
                 onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = 'transparent'; }}>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium truncate" style={{ color: '#4a5a6a' }}>{ticket.title}</p>
-                  <p className="font-mono text-xs mt-0.5" style={{ color: '#1e2a3a' }}>
+                  <p className="text-sm font-medium truncate" style={{ color: '#1F1C18' }}>{ticket.title}</p>
+                  <p className="font-sans text-xs mt-0.5" style={{ color: '#A89C8E' }}>
                     {ticket.location} · {formatDistanceToNow(new Date(ticket.updatedAt), { addSuffix: true, locale: es })}
                   </p>
                 </div>
@@ -151,29 +147,31 @@ const DashboardPage: React.FC = () => {
               </Link>
             ))}
           </div>
-          <Link to="/tickets" className="flex items-center gap-1 mt-3 font-mono text-xs transition-colors" style={{ color: '#1e2a3a' }}
-            onMouseEnter={e => e.currentTarget.style.color = '#c8931a'}
-            onMouseLeave={e => e.currentTarget.style.color = '#1e2a3a'}>
-            VER TODAS LAS INCIDENCIAS <ArrowRight size={10} />
+          <Link to="/tickets"
+            className="flex items-center gap-1 mt-4 font-sans text-xs transition-colors"
+            style={{ color: '#A89C8E' }}
+            onMouseEnter={e => e.currentTarget.style.color = '#B08A57'}
+            onMouseLeave={e => e.currentTarget.style.color = '#A89C8E'}>
+            Ver todas las incidencias <ArrowRight size={11} />
           </Link>
         </div>
 
-        {/* Sidebar panel */}
+        {/* Sidebar */}
         <div className="space-y-4">
-          <div className="card card-corners p-5">
+          <div className="card p-5">
             <p className="section-title mb-4">Acceso rápido</p>
             <div className="space-y-2">
               {[
-                { to: '/tickets/new', label: 'NUEVA INCIDENCIA', icon: Zap, color: '#c8931a' },
-                { to: '/soc', label: 'SOC CENTER', icon: Shield, color: '#ef4444', show: isTechnician },
-                { to: '/audit', label: 'WEBSEC AUDIT', icon: Activity, color: '#8b5cf6' },
-              ].filter(i => i.show !== false).map(({ to, label, icon: Icon, color }) => (
+                { to: '/tickets/new', label: 'Nueva incidencia', icon: Plus, fg: '#B08A57', bg: 'rgba(176,138,87,0.08)', border: 'rgba(176,138,87,0.2)' },
+                { to: '/soc', label: 'SOC Center', icon: Shield, fg: '#9F3A32', bg: 'rgba(159,58,50,0.07)', border: 'rgba(159,58,50,0.18)', show: isTechnician },
+                { to: '/audit', label: 'WebSec Audit', icon: Search, fg: '#5F6F52', bg: 'rgba(95,111,82,0.08)', border: 'rgba(95,111,82,0.2)' },
+              ].filter(i => i.show !== false).map(({ to, label, icon: Icon, fg, bg, border }) => (
                 <Link key={to} to={to}
-                  className="flex items-center gap-3 px-3 py-2.5 rounded font-mono text-xs transition-all"
-                  style={{ background: `${color}08`, border: `1px solid ${color}18`, color }}
-                  onMouseEnter={e => { e.currentTarget.style.background = `${color}14`; e.currentTarget.style.boxShadow = `0 0 12px ${color}20`; }}
-                  onMouseLeave={e => { e.currentTarget.style.background = `${color}08`; e.currentTarget.style.boxShadow = 'none'; }}>
-                  <Icon size={12} style={{ filter: `drop-shadow(0 0 3px ${color})` }} />
+                  className="flex items-center gap-3 px-3 py-2.5 rounded-md font-sans text-sm transition-all"
+                  style={{ background: bg, border: `1px solid ${border}`, color: fg }}
+                  onMouseEnter={e => e.currentTarget.style.filter = 'brightness(0.92)'}
+                  onMouseLeave={e => e.currentTarget.style.filter = 'none'}>
+                  <Icon size={14} />
                   {label}
                 </Link>
               ))}
@@ -181,31 +179,32 @@ const DashboardPage: React.FC = () => {
           </div>
 
           {isTechnician && secStats && secStats.suspiciousIps.length > 0 && (
-            <div className="card p-4" style={{ border: '1px solid rgba(239,68,68,0.15)' }}>
-              <p className="section-title mb-3" style={{ color: 'rgba(239,68,68,0.5)' }}>IPs sospechosas</p>
+            <div className="card p-4" style={{ border: '1px solid rgba(159,58,50,0.2)' }}>
+              <p className="section-title mb-3" style={{ color: '#9F3A32' }}>IPs sospechosas</p>
               {secStats.suspiciousIps.slice(0, 4).map((item) => (
                 <div key={item.ip} className="flex items-center justify-between py-1.5">
-                  <span className="font-mono text-xs" style={{ color: '#3a4a5a' }}>{item.ip}</span>
-                  <span className="badge" style={{ color: '#ef4444', background: 'rgba(239,68,68,0.1)', borderColor: 'rgba(239,68,68,0.3)', boxShadow: '0 0 6px rgba(239,68,68,0.3)' }}>
-                    {item.count} evt
+                  <span className="font-mono text-xs" style={{ color: '#6F6558' }}>{item.ip}</span>
+                  <span className="badge" style={{ color: '#9F3A32', background: 'rgba(159,58,50,0.1)', borderColor: 'rgba(159,58,50,0.25)' }}>
+                    {item.count}
                   </span>
                 </div>
               ))}
-              <Link to="/soc" className="flex items-center gap-1 mt-2 font-mono text-xs" style={{ color: '#1e2a3a' }}
-                onMouseEnter={e => e.currentTarget.style.color = '#ef4444'}
-                onMouseLeave={e => e.currentTarget.style.color = '#1e2a3a'}>
-                VER SOC <ArrowRight size={10} />
+              <Link to="/soc" className="flex items-center gap-1 mt-2 font-sans text-xs transition-colors"
+                style={{ color: '#A89C8E' }}
+                onMouseEnter={e => e.currentTarget.style.color = '#9F3A32'}
+                onMouseLeave={e => e.currentTarget.style.color = '#A89C8E'}>
+                Ver SOC <ArrowRight size={10} />
               </Link>
             </div>
           )}
 
           {isTechnician && secStats && (
-            <div className="card card-corners p-4">
+            <div className="card p-4">
               <p className="section-title mb-3">Últimos eventos</p>
-              <div className="space-y-2">
+              <div className="space-y-2.5">
                 {secStats.recent.slice(0, 4).map((log) => (
                   <div key={log.id} className="flex items-center justify-between">
-                    <span className="font-mono text-xs truncate" style={{ color: '#2a3a4a', maxWidth: '60%' }}>{log.eventType}</span>
+                    <span className="font-sans text-xs truncate" style={{ color: '#6F6558', maxWidth: '60%' }}>{log.eventType}</span>
                     <SeverityBadge severity={log.severity} />
                   </div>
                 ))}

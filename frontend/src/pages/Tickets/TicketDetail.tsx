@@ -34,11 +34,8 @@ const TicketDetailPage: React.FC = () => {
       const res = await api.get<Ticket>(`/tickets/${id}`);
       setTicket(res.data);
       setComment('');
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setSubmitting(false);
-    }
+    } catch (err) { console.error(err); }
+    finally { setSubmitting(false); }
   };
 
   const handleDelete = async () => {
@@ -47,10 +44,7 @@ const TicketDetailPage: React.FC = () => {
     try {
       await api.delete(`/tickets/${id}`);
       navigate('/tickets');
-    } catch (err) {
-      console.error(err);
-      setDeleting(false);
-    }
+    } catch (err) { console.error(err); setDeleting(false); }
   };
 
   if (loading) return <LoadingSpinner />;
@@ -59,7 +53,11 @@ const TicketDetailPage: React.FC = () => {
   return (
     <div className="space-y-5 max-w-4xl">
       <div className="flex items-center justify-between">
-        <Link to="/tickets" className="flex items-center gap-2 text-slate-400 hover:text-white text-sm transition-colors">
+        <Link to="/tickets"
+          className="flex items-center gap-2 text-sm transition-colors"
+          style={{ color: '#A89C8E' }}
+          onMouseEnter={e => e.currentTarget.style.color = '#1F1C18'}
+          onMouseLeave={e => e.currentTarget.style.color = '#A89C8E'}>
           <ArrowLeft size={15} /> Volver a incidencias
         </Link>
         <div className="flex items-center gap-2">
@@ -81,38 +79,40 @@ const TicketDetailPage: React.FC = () => {
           <div className="card p-5">
             <div className="flex items-start gap-3 mb-4">
               <div className="flex-1">
-                <p className="text-slate-500 text-xs font-mono mb-1">#{ticket.id.slice(0, 8)}</p>
-                <h2 className="text-xl font-bold text-white">{ticket.title}</h2>
+                <p className="font-mono text-xs mb-1.5" style={{ color: '#C4B8AA' }}>#{ticket.id.slice(0, 8)}</p>
+                <h2 className="text-xl font-semibold" style={{ color: '#1F1C18' }}>{ticket.title}</h2>
               </div>
               <div className="flex flex-col items-end gap-1.5">
                 <PriorityBadge priority={ticket.priority} />
                 <StatusBadge status={ticket.status} />
               </div>
             </div>
-            <p className="text-slate-300 text-sm leading-relaxed">{ticket.description}</p>
+            <p className="text-sm leading-relaxed" style={{ color: '#6F6558' }}>{ticket.description}</p>
           </div>
 
           <div className="card p-5">
-            <h3 className="text-white font-semibold text-sm mb-4 flex items-center gap-2">
-              <MessageSquare size={15} className="text-slate-400" />
+            <h3 className="font-sans font-semibold text-sm mb-4 flex items-center gap-2" style={{ color: '#1F1C18' }}>
+              <MessageSquare size={15} style={{ color: '#A89C8E' }} />
               Historial ({ticket.comments.length})
             </h3>
             {ticket.comments.length === 0 ? (
-              <p className="text-slate-600 text-sm">Sin comentarios aún.</p>
+              <p className="text-sm" style={{ color: '#A89C8E' }}>Sin comentarios aún.</p>
             ) : (
               <div className="space-y-3">
                 {ticket.comments.map((c) => (
                   <div key={c.id} className="flex gap-3">
-                    <div className="w-7 h-7 bg-slate-700 rounded-full flex items-center justify-center shrink-0 mt-0.5">
-                      <span className="text-xs font-bold text-slate-300">{c.user.name[0]}</span>
+                    <div className="w-7 h-7 rounded-md flex items-center justify-center shrink-0 mt-0.5" style={{ background: '#EFE6D8', border: '1px solid #D8C8B5' }}>
+                      <span className="text-xs font-semibold" style={{ color: '#6F6558' }}>{c.user.name[0]}</span>
                     </div>
-                    <div className="flex-1 bg-slate-800/50 rounded-lg p-3">
+                    <div className="flex-1 rounded-md p-3" style={{ background: '#F6F1E8', border: '1px solid #E5D8C5' }}>
                       <div className="flex items-center gap-2 mb-1">
-                        <span className="text-xs font-medium text-slate-300">{c.user.name}</span>
-                        <span className="text-xs text-slate-600 capitalize">{c.user.role}</span>
-                        <span className="text-xs text-slate-600 ml-auto">{format(new Date(c.createdAt), "d MMM HH:mm", { locale: es })}</span>
+                        <span className="text-xs font-medium" style={{ color: '#1F1C18' }}>{c.user.name}</span>
+                        <span className="text-xs capitalize" style={{ color: '#A89C8E' }}>{c.user.role}</span>
+                        <span className="text-xs ml-auto font-mono" style={{ color: '#C4B8AA' }}>
+                          {format(new Date(c.createdAt), "d MMM HH:mm", { locale: es })}
+                        </span>
                       </div>
-                      <p className="text-sm text-slate-400">{c.content}</p>
+                      <p className="text-sm" style={{ color: '#6F6558' }}>{c.content}</p>
                     </div>
                   </div>
                 ))}
@@ -138,7 +138,7 @@ const TicketDetailPage: React.FC = () => {
 
         <div className="space-y-4">
           <div className="card p-4 space-y-3">
-            <h3 className="text-white font-semibold text-xs uppercase tracking-widest font-mono">Detalles</h3>
+            <h3 className="font-sans font-semibold text-xs uppercase tracking-wide" style={{ color: '#A89C8E', letterSpacing: '0.07em' }}>Detalles</h3>
             {[
               { icon: Tag, label: 'Categoría', value: ticket.category },
               { icon: MapPin, label: 'Ubicación', value: ticket.location },
@@ -148,10 +148,10 @@ const TicketDetailPage: React.FC = () => {
               { icon: Clock, label: 'Actualizado', value: format(new Date(ticket.updatedAt), "d MMM yyyy HH:mm", { locale: es }) },
             ].map(({ icon: Icon, label, value }) => (
               <div key={label} className="flex items-start gap-2.5">
-                <Icon size={13} className="text-slate-600 mt-0.5 shrink-0" />
+                <Icon size={13} style={{ color: '#C4B8AA', marginTop: 2, flexShrink: 0 }} />
                 <div>
-                  <p className="text-xs text-slate-600">{label}</p>
-                  <p className="text-sm text-slate-300">{value}</p>
+                  <p className="text-xs" style={{ color: '#A89C8E' }}>{label}</p>
+                  <p className="text-sm font-medium" style={{ color: '#1F1C18' }}>{value}</p>
                 </div>
               </div>
             ))}
