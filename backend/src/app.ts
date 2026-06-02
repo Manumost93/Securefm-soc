@@ -8,7 +8,9 @@ import userRoutes from './routes/users.routes';
 import logRoutes from './routes/logs.routes';
 import auditRoutes from './routes/audit.routes';
 import profileRoutes from './routes/profile.routes';
+import metricsRoutes from './routes/metrics.routes';
 import { errorHandler, notFound } from './middleware/error.middleware';
+import prisma from './lib/prisma';
 
 const app = express();
 
@@ -43,13 +45,27 @@ app.use(globalLimiter);
 app.use(express.json({ limit: '2mb' }));
 app.use(express.urlencoded({ extended: true }));
 
-app.get('/api/health', (_req, res) => {
-  res.json({
-    status: 'ok',
-    timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV || 'development',
-    version: '1.0.0',
-  });
+app.get('/api/health', async (_req, res) => {
+  try {
+    await prisma.$queryRaw`SELECT 1`;
+    res.json({
+      status: 'ok',
+      timestamp: new Date().toISOString(),
+      environment: process.env.NODE_ENV || 'development',
+      version: '1.0.0',
+      uptime: Math.floor(process.uptime()),
+      database: 'connected',
+    });
+  } catch {
+    res.status(503).json({
+      status: 'degraded',
+      timestamp: new Date().toISOString(),
+      environment: process.env.NODE_ENV || 'development',
+      version: '1.0.0',
+      uptime: Math.floor(process.uptime()),
+      database: 'disconnected',
+    });
+  }
 });
 
 app.use('/api/auth', authLimiter, authRoutes);
@@ -57,6 +73,7 @@ app.use('/api/tickets', ticketRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/logs', logRoutes);
 app.use('/api/audit', auditLimiter, auditRoutes);
+app.use('/api/metrics', metricsRoutes);
 app.use('/api/profile', profileRoutes);
 
 app.use(notFound);

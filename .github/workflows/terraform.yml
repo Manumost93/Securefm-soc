@@ -1,0 +1,66 @@
+name: Terraform CI
+
+on:
+  push:
+    branches: [master, main]
+    paths:
+      - 'infra/terraform/**'
+  pull_request:
+    branches: [master, main]
+    paths:
+      - 'infra/terraform/**'
+
+jobs:
+  terraform-check:
+    name: Terraform Validate & Plan
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: infra/terraform
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: '~1.5'
+
+      - name: Terraform Format Check
+        run: terraform fmt -check -recursive
+        continue-on-error: true
+
+      - name: Terraform Init (sin backend remoto)
+        run: terraform init -backend=false
+
+      - name: Terraform Validate
+        run: terraform validate
+
+      # Plan solo si hay credenciales AWS configuradas
+      # Para activar: añadir AWS_ACCESS_KEY_ID y AWS_SECRET_ACCESS_KEY a GitHub Secrets
+      - name: Terraform Plan (dev)
+        if: ${{ env.AWS_ACCESS_KEY_ID != '' }}
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          TF_VAR_db_username: ${{ secrets.TF_VAR_DB_USERNAME }}
+          TF_VAR_db_password: ${{ secrets.TF_VAR_DB_PASSWORD }}
+          TF_VAR_jwt_secret: ${{ secrets.TF_VAR_JWT_SECRET }}
+        run: |
+          terraform plan \
+            -var-file="environments/dev.tfvars" \
+            -var="db_username=$TF_VAR_db_username" \
+            -var="db_password=$TF_VAR_db_password" \
+            -var="jwt_secret=$TF_VAR_jwt_secret" \
+            -no-color \
+            -out=tfplan
+        continue-on-error: true
+
+      - name: Upload Terraform Plan
+        if: ${{ env.AWS_ACCESS_KEY_ID != '' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: terraform-plan
+          path: infra/terraform/tfplan
+          retention-days: 3
