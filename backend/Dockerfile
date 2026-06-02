@@ -3,7 +3,7 @@
 # ============================================================
 
 # Stage 1: Build — instala todas las deps y compila TypeScript
-FROM node:18-alpine AS builder
+FROM node:26-alpine AS builder
 
 WORKDIR /app
 
@@ -25,7 +25,7 @@ RUN npm run build
 # ============================================================
 # Stage 2: Runtime — imagen mínima de producción
 # ============================================================
-FROM node:18-alpine AS runner
+FROM node:26-alpine AS runner
 
 WORKDIR /app
 
