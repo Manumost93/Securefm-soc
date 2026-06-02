@@ -21,7 +21,7 @@ RUN npm run build
 # ============================================================
 # Stage 2: Serve — Nginx sirve los estáticos y proxea la API
 # ============================================================
-FROM nginx:1.25-alpine AS runner
+FROM nginx:1.31-alpine AS runner
 
 # Config de Nginx (SPA routing + proxy API)
 COPY nginx.conf /etc/nginx/conf.d/default.conf
